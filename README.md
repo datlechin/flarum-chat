@@ -23,7 +23,7 @@ Stay up to date with the chat discussion and find out about mentions of you via 
 # Neon Chat
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg) 
-[![Latest Release](https://img.shields.io/packagist/v/datlechin/flarum-chat)](https://packagist.org/packages/datlechin/flarum-chat)   
+[![Latest Release](https://img.shields.io/packagist/v/xelson/flarum-ext-chat)](https://packagist.org/packages/xelson/flarum-ext-chat)   
 A [Flarum](http://flarum.org) extension. Adds native realtime chat to your Flarum.
 
 Requires Pusher or [kyrne/websocket](https://extiverse.com/extension/kyrne/websocket)
@@ -33,7 +33,7 @@ Requires Pusher or [kyrne/websocket](https://extiverse.com/extension/kyrne/webso
 Install extension via composer:
 
 ```bash
-composer require datlechin/flarum-chat
+composer require xelson/flarum-ext-chat
 ```
 
 Make sure that any socket extension is enabled
@@ -43,7 +43,7 @@ Make sure that any socket extension is enabled
 Via composer:
 
 ```bash
-composer update datlechin/flarum-chat
+composer update xelson/flarum-ext-chat
 php flarum migrate
 php flarum cache:clear
 ```
@@ -51,7 +51,7 @@ php flarum cache:clear
 For development builds:
 
 ```bash
-composer require datlechin/flarum-chat:dev-master
+composer require xelson/flarum-ext-chat:dev-master
 php flarum migrate
 php flarum cache:clear
 ```

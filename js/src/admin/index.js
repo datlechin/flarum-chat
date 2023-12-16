@@ -1,8 +1,8 @@
 import app from 'flarum/admin/app';
 
-app.initializers.add('datlechin-chat', (app) => {
+app.initializers.add('xelson-chat', (app) => {
   app.extensionData
-    .for('datlechin-chat')
+    .for('xelson-chat')
     .registerSetting({
       setting: 'xelson-chat.settings.charlimit',
       label: app.translator.trans('xelson-chat.admin.settings.charlimit'),

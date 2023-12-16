@@ -25,7 +25,7 @@
             "pre-commit": "npm run format"
         }
     },
-    "name": "@datlechin/flarum-chat",
+    "name": "@xelson/flarum-ext-chat",
     "version": "0.0.0",
     "prettier": "@flarum/prettier-config"
 }

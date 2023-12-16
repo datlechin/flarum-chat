@@ -1,5 +1,5 @@
 {
-    "name": "datlechin/flarum-chat",
+    "name": "xelson/flarum-ext-chat",
     "description": "Realtime Chat for Flarum!",
     "keywords": [
         "chat",
@@ -11,8 +11,8 @@
     "type": "flarum-extension",
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/datlechin/flarum-chat/issues",
-        "source": "https://github.com/datlechin/flarum-chat",
+        "issues": "https://github.com/xelson/flarum-ext-chat/issues",
+        "source": "https://github.com/xelson/flarum-ext-chat",
         "forum": "https://discuss.flarum.org/d/25361"
     },
     "authors": [

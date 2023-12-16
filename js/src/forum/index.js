@@ -14,7 +14,7 @@ chat.setAttribute('id', 'chat');
 
 document.body.append(chat);
 
-app.initializers.add('datlechin-chat', (app) => {
+app.initializers.add('xelson-chat', (app) => {
   app.store.models.chats = Chat;
   app.store.models.chatmessages = Message;
 
