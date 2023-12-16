@@ -1,10 +1,4 @@
 <?php
-/*
- * This file is part of xelson/flarum-ext-chat
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Xelson\Chat\Commands;
 
@@ -17,42 +11,21 @@ use Xelson\Chat\MessageValidator;
 
 class PostMessageHandler
 {
-    /**
-     * @var MessageValidator
-     */
-    protected $validator;
-
-    /**
-     * @param MessageValidator      $validator
-     * @param ChatRepository        $chats
-     * @param Dispatcher            $events
-     */
     public function __construct(
-        MessageValidator $validator,
-        ChatRepository $chats,
-        Dispatcher $events
-    ) {
-        $this->validator = $validator;
-        $this->chats = $chats;
-        $this->events = $events;
-    }
+        protected MessageValidator $validator,
+        protected ChatRepository $chats,
+        protected Dispatcher $events
+    ) {}
 
-    /**
-     * Handles the command execution.
-     *
-     * @param PostMessage $command
-     * @return null|string
-     */
     public function handle(PostMessage $command)
     {
         $actor = $command->actor;
         $attributes = $command->data['attributes'];
-        $ip_address = $command->ip_address;
+        $ipAddress = $command->ipAddress;
 
         $content = $attributes['message'];
-        $chat_id = $attributes['chat_id'];
 
-        $chat = $this->chats->findOrFail($chat_id, $actor);
+        $chat = $this->chats->findOrFail($attributes['chat_id'], $actor);
 
         $actor->assertCan('xelson-chat.permissions.chat');
 
@@ -65,7 +38,7 @@ class PostMessageHandler
             $actor->id,
             Carbon::now(),
             $chat->id,
-            $ip_address
+            $ipAddress
         );
 
         $this->validator->assertValid($message->getDirty());

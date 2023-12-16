@@ -1,10 +1,4 @@
 <?php
-/*
- * This file is part of xelson/flarum-ext-chat
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Xelson\Chat\Api\Serializers;
 
@@ -21,24 +15,11 @@ class ChatSerializer extends AbstractSerializer
     protected $type = 'chats';
 
     /**
-     * @var SettingsRepositoryInterface
-     */
-    protected $settings;
-
-    /**
      * @var User
      */
     protected $actor;
 
-    /**
-     * @param PusherWrapper                 $pusher
-     */
-    public function __construct(
-        SettingsRepositoryInterface $settings
-    ) 
-    {
-        $this->settings = $settings;
-    }
+    public function __construct(protected SettingsRepositoryInterface $settings) {}
 
     /**
      * Get the default set of serialized attributes for a model.
@@ -49,7 +30,10 @@ class ChatSerializer extends AbstractSerializer
     protected function getDefaultAttributes($chat)
     {
         $attributes = $chat->getAttributes();
-        if($chat->created_at) $attributes['created_at'] = $this->formatDate($chat->created_at);
+
+        if($chat->created_at) {
+            $attributes['created_at'] = $this->formatDate($chat->created_at);
+        }
 
         return $attributes;
     }

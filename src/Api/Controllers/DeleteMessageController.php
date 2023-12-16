@@ -1,10 +1,4 @@
 <?php
-/*
- * This file is part of xelson/flarum-ext-chat
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Xelson\Chat\Api\Controllers;
 
@@ -18,34 +12,12 @@ use Illuminate\Support\Arr;
 
 class DeleteMessageController extends AbstractShowController
 {
-    /**
-     * The serializer instance for this request.
-     *
-     * @var MessageSerializer
-     */
     public $serializer = MessageSerializer::class;
 
-    /**
-     * @var Dispatcher
-     */
-    protected $bus;
-
-    /**
-     * {@inheritdoc}
-     */
     public $include = ['user', 'deleted_by', 'chat'];
 
-    /**
-     * @param Dispatcher $bus
-     */
-    public function __construct(Dispatcher $bus)
-    {
-        $this->bus = $bus;
-    }
-    /**
-     * @param ServerRequestInterface $request
-     * @return mixed
-     */
+    public function __construct(protected Dispatcher $bus) {}
+
     protected function data(ServerRequestInterface $request, Document $document)
     {
         $id = Arr::get($request->getQueryParams(), 'id');

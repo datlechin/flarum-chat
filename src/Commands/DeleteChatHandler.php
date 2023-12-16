@@ -1,10 +1,4 @@
 <?php
-/*
- * This file is part of xelson/flarum-ext-chat
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Xelson\Chat\Commands;
 
@@ -15,30 +9,17 @@ use Xelson\Chat\Event\Chat\Deleting;
 
 class DeleteChatHandler
 {
-    /**
-     * @param ChatRepository $chats
-     * @param ChatSocket $socket
-     * @param Dispatcher $events
-     */
-    public function __construct(ChatRepository $chats, BusDispatcher $bus, Dispatcher $events)
-    {
-        $this->chats  = $chats;
-        $this->bus = $bus;
-        $this->events = $events;
-    }
+    public function __construct(
+        protected ChatRepository $chat,
+        protected BusDispatcher $bus,
+        protected Dispatcher $event
+    ) {}
 
-    /**
-     * Handles the command execution.
-     *
-     * @param DeleteChat $command
-     * @return null|string
-     */
     public function handle(DeleteChat $command)
     {
-        $chat_id = $command->chat_id;
         $actor = $command->actor;
 
-        $chat = $this->chats->findOrFail($chat_id, $actor);
+        $chat = $this->chat->findOrFail($command->id, $actor);
 
         $users = $chat->users()->get();
 
@@ -46,7 +27,7 @@ class DeleteChatHandler
             ($actor->isAdmin() || $chat->creator_id == $actor->id) && (count($users) > 2 || $chat->type == 1)
         );
 
-        $this->events->dispatch(
+        $this->event->dispatch(
             new Deleting($chat, $actor)
         );
 

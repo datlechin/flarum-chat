@@ -1,10 +1,4 @@
 <?php
-/*
- * This file is part of xelson/flarum-ext-chat
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Xelson\Chat\Commands;
 
@@ -18,60 +12,27 @@ use Xelson\Chat\Event\Message\Saved;
 
 class EditMessageHandler
 {
-    /**
-     * @var MessageRepository
-     */
-    protected $messages;
-
-    /**
-     * @var MessageValidator
-     */
-    protected $validator;
-
-    /**
-     * @var ChatRepository
-     */
-    protected $chats;
-
-    /**
-     * @param MessageRepository             $messages
-     * @param MessageValidator              $validator
-     * @param ChatRepository                $chats
-     * @param Dispatcher                    $events
-     */
     public function __construct(
-        MessageRepository $messages,
-        MessageValidator $validator,
-        ChatRepository $chats,
-        Dispatcher $events
-    ) {
-        $this->messages  = $messages;
-        $this->validator = $validator;
-        $this->chats = $chats;
-        $this->events = $events;
-    }
+        protected MessageRepository $message,
+        protected MessageValidator $validator,
+        protected ChatRepository $chat,
+        protected Dispatcher $event
+    ) {}
 
-    /**
-     * Handles the command execution.
-     *
-     * @param EditMessage $command
-     * @return null|string
-     */
     public function handle(EditMessage $command)
     {
-        $message_id = $command->id;
         $actor = $command->actor;
         $data = $command->data;
         $attributes = Arr::get($data, 'attributes', []);
         $actions = $attributes['actions'];
 
-        $message = $this->messages->findOrFail($message_id);
+        $message = $this->message->findOrFail($command->id);
 
         $actor->assertPermission(
             !$message->type
         );
 
-        $chat = $this->chats->findOrFail($message->chat_id, $actor);
+        $chat = $this->chat->findOrFail($message->chat_id, $actor);
         $chatUser = $chat->getChatUser($actor);
 
         if (isset($actions['msg'])) {
@@ -85,7 +46,7 @@ class EditMessageHandler
             $this->validator->assertValid($message->getDirty());
 
             $message->save();
-        } else if (isset($actions['hide'])) {
+        } elseif (isset($actions['hide'])) {
             $actor->assertCan('xelson-chat.permissions.delete');
 
             if ($actions['hide']) {
@@ -107,9 +68,10 @@ class EditMessageHandler
             $message->save();
             $actions['invoker'] = $actor->id;
         }
+
         $message->actions = $actions;
 
-        $this->events->dispatch(
+        $this->event->dispatch(
             new Saved($message, $actor, $data, false)
         );
 

@@ -1,14 +1,9 @@
 <?php
-/*
- * This file is part of xelson/flarum-ext-chat
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Xelson\Chat\Commands;
 
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Contracts\Bus\Dispatcher as BusDispatcher;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Arr;
@@ -17,40 +12,25 @@ use Xelson\Chat\ChatUser;
 use Xelson\Chat\ChatValidator;
 use Xelson\Chat\ChatRepository;
 use Xelson\Chat\EventMessageChatCreated;
-use Xelson\Chat\Commands\PostEventMessage;
 use Xelson\Chat\Event\Chat\Saved;
 use Xelson\Chat\Exceptions\ChatEditException;
 
 class CreateChatHandler
 {
+    public function __construct(
+        protected ChatValidator $validator,
+        protected ChatRepository $chat,
+        protected BusDispatcher $bus,
+        protected Dispatcher $event
+    ) {}
 
-    /**
-     * @param ChatValidator $validator
-     * @param ChatRepository $chats
-     * @param BusDispatcher $bus
-     * @param Dispatcher $events
-     */
-    public function __construct(ChatValidator $validator, ChatRepository $chats, BusDispatcher $bus, Dispatcher $events)
-    {
-        $this->validator = $validator;
-        $this->chats  = $chats;
-        $this->bus = $bus;
-        $this->events = $events;
-    }
-
-    /**
-     * Handles the command execution.
-     *
-     * @param CreateChat $command
-     * @return null|string
-     */
     public function handle(CreateChat $command)
     {
         $actor = $command->actor;
         $data = $command->data;
         $users = Arr::get($data, 'relationships.users.data', []);
         $attributes = Arr::get($data, 'attributes', []);
-        $ip_address = $command->ip_address;
+        $ipAddress = $command->ipAddress;
 
         $isChannel = intval($attributes['isChannel']);
 
@@ -59,20 +39,24 @@ class CreateChatHandler
         $invited = [];
 
         foreach ($users as $key => $user) {
-            if (array_key_exists($user['id'], $invited))
-                throw new ChatEditException;
+            if (array_key_exists($user['id'], $invited)) {
+                throw new ChatEditException();
+            }
 
             $invited[$user['id']] = true;
-            if ($user['id'] == $actor->id)
+            if ($user['id'] == $actor->id) {
                 array_splice($users, $key, 1);
+            }
         }
+
         array_push($users, ['id' => $actor->id, 'type' => 'users']);
 
-        if (!$isChannel && count($users) < 2)
-            throw new ChatEditException;
+        if (!$isChannel && count($users) < 2) {
+            throw new ChatEditException();
+        }
 
         if (count($users) == 2) {
-            $chats = $this->chats->query()
+            $chats = $this->chat->query()
                 ->where('type', 0)
                 ->whereIn('id', ChatUser::select('chat_id')->where('user_id', $actor->id)->get()->toArray())
                 ->with('users')
@@ -85,8 +69,9 @@ class CreateChatHandler
                     count($chatUsers) == 2 &&
                     ($chatUsers[0]->id == $users[0]['id'] || $chatUsers[0]->id == $users[1]['id']) &&
                     ($chatUsers[1]->id == $users[0]['id'] || $chatUsers[1]->id == $users[1]['id'])
-                )
-                    throw new ChatEditException;
+                ) {
+                    throw new ChatEditException();
+                }
             }
         }
 
@@ -107,15 +92,21 @@ class CreateChatHandler
 
         $chat->save();
 
-        $user_ids = [];
+        $userIds = [];
 
         if (!$isChannel) {
-            foreach ($users as $user) if ($user['id'] != $actor->id) $user_ids[] = $user['id'];
+            foreach ($users as $user) {
+                if ($user['id'] != $actor->id) {
+                    $userIds[] = $user['id'];
+                }
+            }
 
             $pairs = [];
-            foreach (array_merge($user_ids, [$actor->id]) as $v) {
+            foreach (array_merge($userIds, [$actor->id]) as $v) {
                 $pairs[$v] = ['joined_at' => $now];
-                if ($v == $actor->id) $pairs[$v]['role'] = 2;
+                if ($v == $actor->id) {
+                    $pairs[$v]['role'] = 2;
+                }
             }
 
             try {
@@ -133,15 +124,13 @@ class CreateChatHandler
             }
         }
 
-        $eventMessage = $this->bus->dispatch(
-            new PostEventMessage($chat->id, $actor, new EventMessageChatCreated($user_ids), $ip_address)
+        $this->bus->dispatch(
+            new PostEventMessage($chat->id, $actor, new EventMessageChatCreated($userIds), $ipAddress)
         );
 
-        $this->events->dispatch(
+        $this->event->dispatch(
             new Saved($chat, $actor, $data, true)
         );
-
-        // Пользователь должен иметь возможность запретить приглашать себя куда либо
 
         return $chat;
     }

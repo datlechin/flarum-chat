@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of Flarum.
- *
- * For detailed copyright and license information, please view the
- * LICENSE file that was distributed with this source code.
- */
-
 namespace Xelson\Chat\Listener;
 
 use Flarum\Http\RequestUtil;
@@ -25,19 +18,8 @@ use Xelson\Chat\Event\Message\Deleting as MessageDeleting;
 
 class PushChatEvents
 {
-    /**
-     * @var ChatSocket
-     */
-    protected $socket;
+    public function __construct(protected ChatSocket $socket) {}
 
-    public function __construct(ChatSocket $socket)
-    {
-        $this->socket = $socket;
-    }
-
-    /**
-     * @param Dispatcher $events
-     */
     public function subscribe(Dispatcher $events)
     {
         $events->listen(ChatSaved::class, [$this, 'whenChatSaved']);

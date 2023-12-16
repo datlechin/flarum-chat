@@ -1,17 +1,10 @@
 <?php
-/*
- * This file is part of xelson/flarum-ext-chat
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Xelson\Chat;
 
 use Flarum\Extend;
 
 use Flarum\Api\Serializer\ForumSerializer;
-use Illuminate\Contracts\Events\Dispatcher;
 use Xelson\Chat\Api\Controllers\PostMessageController;
 use Xelson\Chat\Api\Controllers\FetchMessageController;
 use Xelson\Chat\Api\Controllers\EditMessageController;
@@ -24,18 +17,17 @@ use Xelson\Chat\Api\Controllers\DeleteChatController;
 
 
 use Flarum\User\User;
-use Xelson\Chat\Chat;
 
 return [
     (new Extend\Frontend('admin'))
         ->js(__DIR__ . '/js/dist/admin.js'),
 
     (new Extend\Frontend('forum'))
-        ->css(__DIR__ . '/resources/less/forum.less')
+        ->css(__DIR__ . '/less/forum.less')
         ->js(__DIR__ . '/js/dist/forum.js')
         ->route('/chat', 'chat'),
 
-    (new Extend\Locales(__DIR__ . '/resources/locale')),
+    (new Extend\Locales(__DIR__ . '/locale')),
 
     (new Extend\Routes('api'))
         ->get('/chats', 'neonchat.chats.get', ListChatsController::class)
@@ -46,12 +38,10 @@ return [
         ->post('/chatmessages/{id}', 'neonchat.chatmessages.post', PostMessageController::class)
         ->patch('/chatmessages/{id}', 'neonchat.chatmessages.edit', EditMessageController::class)
         ->delete('/chatmessages/{id}', 'neonchat.chatmessages.delete', DeleteMessageController::class)
-
         ->get('/chat/user/{id}', 'neonchat.chat.user', ShowUserSafeController::class),
 
     (new Extend\Model(User::class))
-        ->relationship('chats', function ($user) {
-
+        ->relationship('chats', function (User $user) {
             return $user->belongsToMany(Chat::class, 'neonchat_chat_user')
                 ->withPivot('joined_at', 'removed_by', 'role', 'readed_at', 'removed_at');
         }),
@@ -84,5 +74,5 @@ return [
         ->serializeToForum('xelson-chat.settings.display.minimize', 'xelson-chat.settings.display.minimize')
         ->serializeToForum('xelson-chat.settings.display.censor', 'xelson-chat.settings.display.censor'),
 
-    (new Extend\Event)->subscribe(Listener\PushChatEvents::class)
+    (new Extend\Event())->subscribe(Listener\PushChatEvents::class)
 ];

@@ -3,7 +3,6 @@
 use Flarum\Group\Group;
 use Flarum\Database\Migration;
 
-
 return Migration::addPermissions([
     'xelson-chat.permissions.enabled' => [Group::GUEST_ID],
 

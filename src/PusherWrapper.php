@@ -1,10 +1,4 @@
 <?php
-/*
- * This file is part of xelson/flarum-ext-chat
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Xelson\Chat;
 
@@ -15,31 +9,17 @@ use Pusher as PusherLegacy;
 class PusherWrapper
 {
     /**
-     * @var SettingsRepositoryInterface
-     */
-    protected $settings;
-
-    /**
-     * @var Pusher
+     * @var Pusher|PusherLegacy|false
      */
     protected $pusher;
 
-    /**
-     * @param SettingsRepositoryInterface $settings
-     */
-    public function __construct(SettingsRepositoryInterface $settings)
-    {
-        $this->settings = $settings;
-    }
+    public function __construct(protected SettingsRepositoryInterface $settings) {}
 
-    /**
-     * @return bool|\Illuminate\Foundation\Application|mixed|Pusher
-     * @throws \Pusher\PusherException
-     */
-    private function buildPusher()
+    private function buildPusher(): Pusher|PusherLegacy|false
     {
-        if (class_exists(Pusher::class) && app()->bound(Pusher::class)) return resolve(Pusher::class);
-        else if (class_exists(PusherLegacy::class)) {
+        if (class_exists(Pusher::class) && app()->bound(Pusher::class)) {
+            return resolve(Pusher::class);
+        } elseif (class_exists(PusherLegacy::class)) {
             $settings = resolve('flarum.settings');
 
             $options = [];
@@ -59,12 +39,7 @@ class PusherWrapper
         }
     }
 
-    /**
-     * Pseudo for pusher instance
-     * 
-     * @return Pusher
-     */
-    public function pusher()
+    public function pusher(): Pusher|PusherLegacy|false
     {
         if (is_null($this->pusher)) {
             $this->pusher = $this->buildPusher();

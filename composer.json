@@ -1,5 +1,5 @@
 {
-    "name": "xelson/flarum-ext-chat",
+    "name": "datlechin/flarum-chat",
     "description": "Realtime Chat for Flarum!",
     "keywords": [
         "chat",
@@ -11,8 +11,8 @@
     "type": "flarum-extension",
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/Xelson/flarum-ext-chat/issues",
-        "source": "https://github.com/Xelson/flarum-ext-chat",
+        "issues": "https://github.com/datlechin/flarum-chat/issues",
+        "source": "https://github.com/datlechin/flarum-chat",
         "forum": "https://discuss.flarum.org/d/25361"
     },
     "authors": [
@@ -42,6 +42,23 @@
                 "backgroundColor": "#ffaad4",
                 "backgroundSize": "cover",
                 "backgroundPosition": "center"
+            }
+        },
+        "flarum-cli": {
+            "modules": {
+                "admin": true,
+                "forum": true,
+                "js": true,
+                "jsCommon": false,
+                "css": true,
+                "gitConf": true,
+                "githubActions": true,
+                "prettier": true,
+                "typescript": false,
+                "bundlewatch": false,
+                "backendTesting": false,
+                "editorConfig": true,
+                "styleci": true
             }
         }
     },
