@@ -27,11 +27,15 @@
         {
             "name": "Xelson",
             "homepage": "https://neonsky.ru"
+        },
+        {
+            "name": "Ngo Quoc Dat",
+            "homepage": "https://ngoquocdat.dev"
         }
     ],
     "require": {
-        "flarum/core": "^1.0",
-        "flarum/markdown": "^1.0"
+        "flarum/core": "^1.8",
+        "flarum/markdown": "^1.8"
     },
     "extra": {
         "flarum-extension": {
